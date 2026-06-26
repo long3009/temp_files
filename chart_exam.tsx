@@ -285,3 +285,101 @@ export const DashboardExample = () => (
     </Grid>
   </Box>
 )
+
+
+
+/// update Point
+
+if (type === 'point') {
+  const {
+    xKey: pxKey = 'x',
+    yKey: pyKey = 'y',
+    xLabel,
+    yLabel,
+    xUnit = '',
+    yUnit = '',
+    xTickFormatter,
+    yTickFormatter,
+  } = pointConfig ?? {}
+
+  // Custom tooltip hiển thị đúng label x/y
+  const PointTooltip = ({ active, payload }: TooltipContentProps<number, string>) => {
+    if (!active || !payload?.length) return null
+    const d = payload[0]?.payload  // raw data point
+    return (
+      <Paper
+        elevation={3}
+        sx={{
+          p: 1.5,
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', minWidth: 60 }}>
+              {xLabel ?? pxKey}:
+            </Typography>
+            <Typography variant="caption">
+              <strong>{d?.[pxKey]}{xUnit ? ` ${xUnit}` : ''}</strong>
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', minWidth: 60 }}>
+              {yLabel ?? pyKey}:
+            </Typography>
+            <Typography variant="caption">
+              <strong>{d?.[pyKey]}{yUnit ? ` ${yUnit}` : ''}</strong>
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
+    )
+  }
+
+  return (
+    <ResponsiveContainer width={width} height={height}>
+      <ScatterChart margin={{ bottom: xLabel ? 20 : 5, left: yLabel ? 10 : 5 }}>
+        <CartesianGrid {...commonGrid} />
+        <XAxis
+          dataKey={pxKey}
+          type="number"
+          tick={{ fill: textColor, fontSize: 12 }}
+          axisLine={{ stroke: gridColor }}
+          tickLine={false}
+          name={xLabel ?? pxKey}
+          tickFormatter={xTickFormatter}
+          label={xLabel
+            ? { value: xLabel, position: 'insideBottom', offset: -10, fill: textColor, fontSize: 12 }
+            : undefined
+          }
+        />
+        <YAxis
+          dataKey={pyKey}
+          type="number"
+          tick={{ fill: textColor, fontSize: 12 }}
+          axisLine={false}
+          tickLine={false}
+          width={'auto'}
+          name={yLabel ?? pyKey}
+          tickFormatter={yTickFormatter}
+          label={yLabel
+            ? { value: yLabel, angle: -90, position: 'insideLeft', offset: 10, fill: textColor, fontSize: 12 }
+            : undefined
+          }
+        />
+        {tooltip.show && <Tooltip content={<PointTooltip />} cursor={{ strokeDasharray: '3 3' }} />}
+        {legendProps && <Legend {...legendProps} />}
+        {series.map((s, i) => (
+          <Scatter
+            key={s.key}
+            name={s.name ?? s.key}
+            data={data}
+            fill={getColor(s, i, colors)}
+          />
+        ))}
+      </ScatterChart>
+    </ResponsiveContainer>
+  )
+}
