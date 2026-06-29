@@ -1,0 +1,55 @@
+// src/components/DeleteConfirmDialog.tsx
+import {
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  Button, Typography, CircularProgress,
+} from '@mui/material'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+
+interface Props {
+  open: boolean
+  title?: string
+  description?: React.ReactNode
+  loading?: boolean
+  onClose: () => void
+  onConfirm: () => void
+}
+
+export const DeleteConfirmDialog = ({
+  open,
+  title = 'Xác nhận xóa',
+  description,
+  loading = false,
+  onClose,
+  onConfirm,
+}: Props) => (
+  <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <DialogTitle
+      component="div"
+      sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+    >
+      <WarningAmberIcon color="warning" />
+      {title}
+    </DialogTitle>
+    <DialogContent>
+      {description ?? (
+        <Typography variant="body2">
+          Bạn có chắc muốn xóa? Hành động này không thể hoàn tác.
+        </Typography>
+      )}
+    </DialogContent>
+    <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+      <Button variant="outlined" onClick={onClose} disabled={loading}>
+        Hủy
+      </Button>
+      <Button
+        variant="contained"
+        color="error"
+        onClick={onConfirm}
+        disabled={loading}
+        startIcon={loading ? <CircularProgress size={16} /> : null}
+      >
+        Xóa
+      </Button>
+    </DialogActions>
+  </Dialog>
+)
